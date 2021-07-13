@@ -58,7 +58,7 @@ async function editUser(userId) {
 
 // Форма для изменения клиента
 async function showEditUserForm(e) {
-    let userId = getUserId(e);
+    let userId = getId(e);
     let user = await getUserById(userId);
 
     wrapper.innerHTML =
@@ -181,7 +181,7 @@ async function createUser() {
 
 // Удаление user
 async function deleteUser(e) {
-    let userId = getUserId(e);
+    let userId = getId(e);
 
     await fetch(baseBackURL + '/' + userId, {method: 'DELETE'});
 
@@ -189,7 +189,7 @@ async function deleteUser(e) {
 }
 
 async function showBooks(e) {
-    let userId = getUserId(e);
+    let userId = getId(e);
     wrapper.innerHTML = ' <table class="table">\n' +
         '    <thead>\n' +
         '    <tr>\n' +
@@ -214,7 +214,7 @@ async function showBooks(e) {
         tr.classList.toggle('row-' + i++);
         tbodyBook.appendChild(tr);
     }
-    initBookActionButtons();
+    initBookActionButtons(userId);
 }
 
 async function getAllBooks() {
@@ -248,12 +248,10 @@ function createBookTR(book) {
         td4.textContent += ' ';
     }
 
-    // td5.innerHTML =
-    //     '<div class="btn-group action-buttons" role="group" aria-label="Basic example">' +
-    //     '<a class="btn btn-primary btn-editUser" role="button">Edit</a>' +
-    //     '<button type="submit" class="btn btn-danger btn-deleteUser">Delete</button>' +
-    //     '<button class="btn btn-primary btn-getBooks" type="button">Take Books</button>'
-    // '</div>';
+    td5.innerHTML =
+        '<div class="btn-group action-buttons" role="group" aria-label="Basic example">' +
+        '<a class="btn btn-primary btn-takeBook" role="button">Take Book</a>' +
+    '</div>';
     tr.appendChild(td1);
     tr.appendChild(td2);
     tr.appendChild(td3);
@@ -262,18 +260,26 @@ function createBookTR(book) {
     return tr;
 }
 
+async function takeBook(e) {
+    let userId = e.currentTarget.userId;
+    let bookId = getId(e);
+    let url = baseBackURL + '/' + userId + '/books/' + bookId;
+
+    await fetch(url);
+}
+
 // Возвращает на начальную страницу
 function backToMain() {
     window.location.href = baseFrontURL;
 }
 
-function getUserId(e) {
+function getId(e) {
+    console.log(e);
     let actionButton = e.target;
     let actionButtons = actionButton.parentElement;
     let td = actionButtons.parentElement;
     let tr = td.parentElement;
-    let userID = tr.querySelector('td').textContent;
-    return userID;
+    return tr.querySelector('td').textContent;
 }
 
 function initActionsButtons() {
@@ -291,7 +297,12 @@ function initActionsButtons() {
     });
 }
 
-function initBookActionButtons() {
+function initBookActionButtons(userId) {
     let backbtn = document.querySelector('.btn-back');
     backbtn.addEventListener('click', backToMain);
+    let takeBookButtons = document.querySelectorAll('.btn-takeBook');
+    takeBookButtons.forEach(btn => {
+        btn.addEventListener('click', takeBook);
+        btn.userId = userId;
+    });
 }
