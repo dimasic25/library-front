@@ -4,6 +4,7 @@ const baseFrontURL = 'http://localhost:63342/library-front/index.html';
 const tbody = document.querySelector('tbody');
 const createBtn = document.querySelector('.btn-createUser');
 const wrapper = document.querySelector('.wrapper');
+let tbodyBook;
 
 document.addEventListener('DOMContentLoaded', showAllUsers);
 createBtn.addEventListener('click', showCreateClientForm);
@@ -34,9 +35,11 @@ async function editUser(userId) {
     let user_last_name = document.querySelector('.last_name-edit').value;
     let user_email = document.querySelector('.email-edit').value;
 
-    let data = { first_name: user_first_name,
+    let data = {
+        first_name: user_first_name,
         last_name: user_last_name,
-        email: user_email};
+        email: user_email
+    };
 
     try {
         const response = await fetch(baseBackURL + '/' + userId, {
@@ -82,7 +85,9 @@ async function showEditUserForm(e) {
 
     let btn_editUserFromData = document.querySelector(".btn-editUserFromData");
 
-    btn_editUserFromData.addEventListener('click', function(){editUser(userId)});
+    btn_editUserFromData.addEventListener('click', function () {
+        editUser(userId)
+    });
     btn_editUserFromData.addEventListener('click', backToMain);
 }
 
@@ -116,7 +121,8 @@ function createTR(user) {
         '<div class="btn-group action-buttons" role="group" aria-label="Basic example">' +
         '<a class="btn btn-primary btn-editUser" role="button">Edit</a>' +
         '<button type="submit" class="btn btn-danger btn-deleteUser">Delete</button>' +
-        '</div>';
+        '<button class="btn btn-primary btn-getBooks" type="button">Take Books</button>'
+    '</div>';
     tr.appendChild(td1);
     tr.appendChild(td2);
     tr.appendChild(td3);
@@ -152,9 +158,11 @@ async function createUser() {
     let user_last_name = document.querySelector('.last_name-input').value;
     let user_email = document.querySelector('.email-input').value;
 
-    let data = { first_name: user_first_name,
-    last_name: user_last_name,
-    email: user_email};
+    let data = {
+        first_name: user_first_name,
+        last_name: user_last_name,
+        email: user_email
+    };
 
     try {
         const response = await fetch(baseBackURL, {
@@ -180,6 +188,79 @@ async function deleteUser(e) {
     backToMain();
 }
 
+async function showBooks(e) {
+    let userId = getUserId(e);
+    wrapper.innerHTML = ' <table class="table">\n' +
+        '    <thead>\n' +
+        '    <tr>\n' +
+        '      <th scope="col">#</th>\n' +
+        '      <th scope="col">Name</th>\n' +
+        '      <th scope="col">Author</th>\n' +
+        '      <th scope="col">Genres</th>\n' +
+        '      <th scope="col">Actions</th>\n' +
+        '    </tr>\n' +
+        '    </thead>\n' +
+        '    <tbody>\n' +
+        '    </tbody>\n' +
+        '  </table>\n' +
+        '\n' +
+        '  <button class="btn btn-primary btn-back"><a>Back to Main</a></button>';
+
+    tbodyBook = document.querySelector('tbody');
+    let books = await getAllBooks();
+    let i = 1;
+    for (let book of books) {
+        let tr = createBookTR(book);
+        tr.classList.toggle('row-' + i++);
+        tbodyBook.appendChild(tr);
+    }
+    initBookActionButtons();
+}
+
+async function getAllBooks() {
+    let response = await fetch('http://localhost:8080/books');
+    if (response.ok) { // если HTTP-статус в диапазоне 200-299
+        // получаем тело ответа
+        return await response.json();
+    } else {
+        alert("Ошибка HTTP: " + response.status);
+    }
+}
+
+function createBookTR(book) {
+    let tr = document.createElement('tr');
+    // id
+    let td1 = document.createElement('td');
+    // Name
+    let td2 = document.createElement('td');
+    // Author
+    let td3 = document.createElement('td');
+    // Genres
+    let td4 = document.createElement('td');
+    // actions
+    let td5 = document.createElement('td');
+    td1.textContent = book.id;
+    td2.textContent = book.name;
+    td3.textContent = book.author.name;
+    let genres = book.genres;
+    for (let genre of genres) {
+        td4.textContent += genre.name;
+        td4.textContent += ' ';
+    }
+
+    // td5.innerHTML =
+    //     '<div class="btn-group action-buttons" role="group" aria-label="Basic example">' +
+    //     '<a class="btn btn-primary btn-editUser" role="button">Edit</a>' +
+    //     '<button type="submit" class="btn btn-danger btn-deleteUser">Delete</button>' +
+    //     '<button class="btn btn-primary btn-getBooks" type="button">Take Books</button>'
+    // '</div>';
+    tr.appendChild(td1);
+    tr.appendChild(td2);
+    tr.appendChild(td3);
+    tr.appendChild(td4);
+    tr.appendChild(td5);
+    return tr;
+}
 
 // Возвращает на начальную страницу
 function backToMain() {
@@ -204,4 +285,13 @@ function initActionsButtons() {
     deleteButtons.forEach(btn => {
         btn.addEventListener('click', deleteUser);
     });
+    let getBooksButtons = document.querySelectorAll('.btn-getBooks');
+    getBooksButtons.forEach(btn => {
+        btn.addEventListener('click', showBooks);
+    });
+}
+
+function initBookActionButtons() {
+    let backbtn = document.querySelector('.btn-back');
+    backbtn.addEventListener('click', backToMain);
 }
