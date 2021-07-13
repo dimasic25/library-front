@@ -1,6 +1,11 @@
 const baseBackURL = 'http://localhost:8080/users';
 
 const tbody = document.querySelector('tbody');
+const createBtn = document.querySelector('.btn-createUser');
+const wrapper = document.querySelector('.wrapper');
+
+document.addEventListener('DOMContentLoaded', showAllUsers);
+createBtn.addEventListener('click', showCreateClientForm);
 
 async function showAllUsers() {
     let users = await getAllUsers();
@@ -55,4 +60,19 @@ function createTR(user) {
     return tr;
 }
 
-showAllUsers().then(r => console.log("Успешно!"));
+// Форма для создания клиента
+function showCreateClientForm() {
+    wrapper.innerHTML =
+        '<h1>Создание клиента</h1>' +
+        '<div class="form-group row gy-2">' +
+        ' <label for="formGroupExampleInput">First Name</label>' +
+        '<input name="first_name" type="text" class="form-control" placeholder="Имя"> </div>' +
+        '<div class="form-group row gy-2">' +
+        ' <label for="formGroupExampleInput">Last Name</label>' +
+        '<input name="last_name" type="text" class="form-control" placeholder="Фамилия"> </div>' +
+        '<div class="form-group row gy-2">' +
+        ' <label for="formGroupExampleInput">Email</label>' +
+        '<input name="email" type="text" class="form-control" placeholder="Электронная почта"> </div>' +
+        '<br><button class="btn btn-primary btn-createUserFromData">Создать</button><br>'
+    ;
+}
