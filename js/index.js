@@ -19,7 +19,7 @@ async function getAllUsers() {
 async function fetchData(url) {
     let response = await fetch(url);
     if (response.ok) { // если HTTP-статус в диапазоне 200-299
-                       // получаем тело ответа
+        // получаем тело ответа
         return await response.json();
     } else {
         alert("Ошибка HTTP: " + response.status);
@@ -36,16 +36,22 @@ function createTR(user) {
     let td3 = document.createElement('td');
     // email
     let td4 = document.createElement('td');
-
+    // actions
+    let td5 = document.createElement('td');
     td1.textContent = user.id;
     td2.textContent = user.first_name;
     td3.textContent = user.last_name;
     td4.textContent = user.email;
-
+    td5.innerHTML =
+        '<div class="btn-group action-buttons" role="group" aria-label="Basic example">' +
+        '<a class="btn btn-primary btn-editUser" role="button">Edit</a>' +
+        '<button type="submit" class="btn btn-danger btn-deleteUser">Delete</button>' +
+        '</div>';
     tr.appendChild(td1);
     tr.appendChild(td2);
     tr.appendChild(td3);
     tr.appendChild(td4);
+    tr.appendChild(td5);
     return tr;
 }
 
