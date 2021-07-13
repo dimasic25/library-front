@@ -86,13 +86,6 @@ async function showEditUserForm(e) {
     btn_editUserFromData.addEventListener('click', backToMain);
 }
 
-function initActionsButtons() {
-        let editButtons = document.querySelectorAll('.btn-editUser');
-        editButtons.forEach(btn => {
-            btn.addEventListener('click', showEditUserForm);
-        })
-}
-
 async function getAllUsers() {
     let response = await fetch(baseBackURL);
     if (response.ok) { // если HTTP-статус в диапазоне 200-299
@@ -178,6 +171,16 @@ async function createUser() {
     }
 }
 
+// Удаление user
+async function deleteUser(e) {
+    let userId = getUserId(e);
+
+    await fetch(baseBackURL + '/' + userId, {method: 'DELETE'});
+
+    backToMain();
+}
+
+
 // Возвращает на начальную страницу
 function backToMain() {
     window.location.href = baseFrontURL;
@@ -190,4 +193,15 @@ function getUserId(e) {
     let tr = td.parentElement;
     let userID = tr.querySelector('td').textContent;
     return userID;
+}
+
+function initActionsButtons() {
+    let editButtons = document.querySelectorAll('.btn-editUser');
+    editButtons.forEach(btn => {
+        btn.addEventListener('click', showEditUserForm);
+    });
+    let deleteButtons = document.querySelectorAll('.btn-deleteUser');
+    deleteButtons.forEach(btn => {
+        btn.addEventListener('click', deleteUser);
+    });
 }
