@@ -16,14 +16,85 @@ async function showAllUsers() {
         tr.classList.toggle('row-' + i++);
         tbody.appendChild(tr);
     }
+    initActionsButtons();
+}
+
+async function getUserById(userId) {
+    let response = await fetch(baseBackURL + '/' + userId);
+    if (response.ok) { // если HTTP-статус в диапазоне 200-299
+        // получаем тело ответа
+        return await response.json();
+    } else {
+        alert("Ошибка HTTP: " + response.status);
+    }
+}
+
+async function editUser(userId) {
+    let user_first_name = document.querySelector('.first_name-edit').value;
+    let user_last_name = document.querySelector('.last_name-edit').value;
+    let user_email = document.querySelector('.email-edit').value;
+
+    let data = { first_name: user_first_name,
+        last_name: user_last_name,
+        email: user_email};
+
+    try {
+        const response = await fetch(baseBackURL + '/' + userId, {
+            method: 'PUT',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        const json = await response.json();
+        console.log('Успех:', JSON.stringify(json));
+    } catch (error) {
+        console.error('Ошибка:', error);
+    }
+}
+
+// Форма для изменения клиента
+async function showEditUserForm(e) {
+    let userId = getUserId(e);
+    let user = await getUserById(userId);
+
+    wrapper.innerHTML =
+        '<h1>Обновление клиента</h1>' +
+        '<div class="form-group row gy-2">' +
+        ' <label for="formGroupExampleInput">First Name</label>' +
+        '<input name="first_name" type="text" class="form-control first_name-edit"> </div>' +
+        '<div class="form-group row gy-2">' +
+        ' <label for="formGroupExampleInput">Last Name</label>' +
+        '<input name="last_name" type="text" class="form-control last_name-edit"> </div>' +
+        '<div class="form-group row gy-2">' +
+        ' <label for="formGroupExampleInput">Email</label>' +
+        '<input name="email" type="email" class="form-control email-edit"> </div>' +
+        '<br><button class="btn btn-primary btn-editUserFromData">Изменить</button><br>'
+    ;
+
+    let first_name = document.querySelector('.first_name-edit');
+    let last_name = document.querySelector('.last_name-edit');
+    let email = document.querySelector('.email-edit');
+
+    first_name.value = user.first_name;
+    last_name.value = user.last_name;
+    email.value = user.email;
+
+    let btn_editUserFromData = document.querySelector(".btn-editUserFromData");
+
+    btn_editUserFromData.addEventListener('click', function(){editUser(userId)});
+    btn_editUserFromData.addEventListener('click', backToMain);
+}
+
+function initActionsButtons() {
+        let editButtons = document.querySelectorAll('.btn-editUser');
+        editButtons.forEach(btn => {
+            btn.addEventListener('click', showEditUserForm);
+        })
 }
 
 async function getAllUsers() {
-    return (await fetchData(baseBackURL));
-}
-
-async function fetchData(url) {
-    let response = await fetch(url);
+    let response = await fetch(baseBackURL);
     if (response.ok) { // если HTTP-статус в диапазоне 200-299
         // получаем тело ответа
         return await response.json();
@@ -107,6 +178,16 @@ async function createUser() {
     }
 }
 
+// Возвращает на начальную страницу
 function backToMain() {
     window.location.href = baseFrontURL;
+}
+
+function getUserId(e) {
+    let actionButton = e.target;
+    let actionButtons = actionButton.parentElement;
+    let td = actionButtons.parentElement;
+    let tr = td.parentElement;
+    let userID = tr.querySelector('td').textContent;
+    return userID;
 }
