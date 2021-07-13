@@ -1,4 +1,5 @@
 const baseBackURL = 'http://localhost:8080/users';
+const baseFrontURL = 'http://localhost:63342/library-front/index.html';
 
 const tbody = document.querySelector('tbody');
 const createBtn = document.querySelector('.btn-createUser');
@@ -66,13 +67,46 @@ function showCreateClientForm() {
         '<h1>Создание клиента</h1>' +
         '<div class="form-group row gy-2">' +
         ' <label for="formGroupExampleInput">First Name</label>' +
-        '<input name="first_name" type="text" class="form-control" placeholder="Имя"> </div>' +
+        '<input name="first_name" type="text" class="form-control first_name-input" placeholder="Имя"> </div>' +
         '<div class="form-group row gy-2">' +
         ' <label for="formGroupExampleInput">Last Name</label>' +
-        '<input name="last_name" type="text" class="form-control" placeholder="Фамилия"> </div>' +
+        '<input name="last_name" type="text" class="form-control last_name-input" placeholder="Фамилия"> </div>' +
         '<div class="form-group row gy-2">' +
         ' <label for="formGroupExampleInput">Email</label>' +
-        '<input name="email" type="text" class="form-control" placeholder="Электронная почта"> </div>' +
+        '<input name="email" type="email" class="form-control email-input" placeholder="Электронная почта"> </div>' +
         '<br><button class="btn btn-primary btn-createUserFromData">Создать</button><br>'
     ;
+
+    let btn_createUserFromData = document.querySelector(".btn-createUserFromData");
+
+    btn_createUserFromData.addEventListener('click', createUser);
+    btn_createUserFromData.addEventListener('click', backToMain);
+}
+
+async function createUser() {
+    let user_first_name = document.querySelector('.first_name-input').value;
+    let user_last_name = document.querySelector('.last_name-input').value;
+    let user_email = document.querySelector('.email-input').value;
+
+    let data = { first_name: user_first_name,
+    last_name: user_last_name,
+    email: user_email};
+
+    try {
+        const response = await fetch(baseBackURL, {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        const json = await response.json();
+        console.log('Успех:', JSON.stringify(json));
+    } catch (error) {
+        console.error('Ошибка:', error);
+    }
+}
+
+function backToMain() {
+    window.location.href = baseFrontURL;
 }
