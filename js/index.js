@@ -3,12 +3,14 @@ const baseFrontURL = 'http://127.0.0.1:5500/index.html';
 
 const tbody = document.querySelector('tbody');
 const createBtn = document.querySelector('.btn-createUser');
+const showFormPeriodBtn = document.querySelector('.btn-showFormPeriod');
 const wrapper = document.querySelector('.wrapper');
 let tbodyBook;
 let userId;
 
 document.addEventListener('DOMContentLoaded', showAllUsers);
 createBtn.addEventListener('click', showCreateClientForm);
+showFormPeriodBtn.addEventListener('click', showFormPeriod);
 
 async function showAllUsers() {
 	let users = await getAllUsers();
@@ -283,11 +285,98 @@ async function showBooksUser(e) {
 
 }
 
-
 async function returnBook(e) {
 	let bookId = getId(e);
 
 	await fetch(baseBackURL + '/' + userId + '/books/' + bookId, { method: 'DELETE' });
+}
+
+function showFormPeriod() {
+	wrapper.innerHTML =
+		'<h1>Даты</h1>' +
+		'<div class="form-group row gy-2">' +
+		' <label for="formGroupExampleInput">Date 1</label>' +
+		'<input name="data1" type="text" class="form-control date1-input" placeholder="yyyy-mm-dd"> </div>' +
+		'<div class="form-group row gy-2">' +
+		' <label for="formGroupExampleInput">Date 2</label>' +
+		'<input name="data2" type="text" class="form-control date2-input" placeholder="yyyy-mm-dd"> </div>' +
+		'<br><button class="btn btn-primary btn-getBooksForPeriod">Вернуть список книг</button><br>'
+		;
+
+	let btn_getBooksforPeriod = document.querySelector(".btn-getBooksForPeriod");
+
+	btn_getBooksforPeriod.addEventListener('click', showBooksForPeriod);
+}
+
+async function showBooksForPeriod() {
+	let date1 = document.querySelector('.date1-input').value;
+	let date2 = document.querySelector('.date2-input').value;
+
+	wrapper.innerHTML = ' <table class="table">\n' +
+		'    <thead>\n' +
+		'    <tr>\n' +
+		'      <th scope="col">#</th>\n' +
+		'      <th scope="col">Name User</th>\n' +
+		'      <th scope="col">Name Book</th>\n' +
+		'      <th scope="col">Date Taking</th>\n' +
+		'      <th scope="col">Date Return</th>\n' +
+		'    </tr>\n' +
+		'    </thead>\n' +
+		'    <tbody>\n' +
+		'    </tbody>\n' +
+		'  </table>\n' +
+		'\n' +
+		'  <button class="btn btn-primary btn-back"><a>Back to Main</a></button>';
+
+	let backbtn = document.querySelector('.btn-back');
+	backbtn.addEventListener('click', backToMain);
+
+	tbodyBook = document.querySelector('tbody');
+	let dateBooks = await getBooksForPeriod(date1, date2);
+	let i = 1;
+	for (let datebook of dateBooks) {
+		let tr = createDateBookTr(datebook);
+		tr.classList.toggle('row-' + i++);
+		tbodyBook.appendChild(tr);
+	}
+
+}
+
+async function getBooksForPeriod(date1, date2) {
+	let url = 'http://localhost:8080/booksPeriod?begin=' + date1 + '&end=' + date2;
+	let response = await fetch(url);
+	if (response.ok) { // если HTTP-статус в диапазоне 200-299
+		// получаем тело ответа
+		return await response.json();
+	} else {
+		alert("Ошибка HTTP: " + response.status);
+	}
+}
+
+function createDateBookTr(datebook) {
+	let tr = document.createElement('tr');
+	// id
+	let td1 = document.createElement('td');
+	// NameUser
+	let td2 = document.createElement('td');
+	// NameBook
+	let td3 = document.createElement('td');
+	// Date taking
+	let td4 = document.createElement('td');
+	// Date return
+	let td5 = document.createElement('td');
+	td1.textContent = datebook.id;
+	td2.textContent = datebook.user.first_name + ' ' + datebook.user.last_name;
+	td3.textContent = datebook.book.name;
+	td4.textContent = datebook.date_taking;
+	td5.textContent = datebook.date_return;
+
+	tr.appendChild(td1);
+	tr.appendChild(td2);
+	tr.appendChild(td3);
+	tr.appendChild(td4);
+	tr.appendChild(td5);
+	return tr;
 }
 
 function setBookPageTable(e) {
