@@ -283,6 +283,13 @@ async function showBooksUser(e) {
 
 }
 
+
+async function returnBook(e) {
+	let bookId = getId(e);
+
+	await fetch(baseBackURL + '/' + userId + '/books/' + bookId, { method: 'DELETE' });
+}
+
 function setBookPageTable(e) {
 	userId = getId(e);
 	wrapper.innerHTML = ' <table class="table">\n' +
@@ -344,6 +351,13 @@ function initBookActionButtons(userId, flagActions) {
 		takeBookButtons.forEach(btn => {
 			btn.addEventListener('click', takeBook);
 			btn.userId = userId;
+		});
+	}
+	else if (flagActions === 2) {
+		let returnBookButtons = document.querySelectorAll('.btn-returnBook');
+		returnBookButtons.forEach(btn => {
+			btn.addEventListener('click', returnBook);
+			btn.addEventListener('click', backToMain);
 		});
 	}
 }
