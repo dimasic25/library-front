@@ -2,8 +2,9 @@ const baseBackURL = 'http://localhost:8080/users';
 const baseFrontURL = 'http://127.0.0.1:5500/index.html';
 
 const tbody = document.querySelector('tbody');
-const createBtn = document.querySelector('.btn-createUser');
-const showFormPeriodBtn = document.querySelector('.btn-showFormPeriod');
+const createBtn = document.querySelector('.btn-create-user');
+const showFormPeriodBtn = document.querySelector('.btn-show-form-period');
+const showNotificationsBtn = document.querySelector('.btn-show-notifications');
 const wrapper = document.querySelector('.wrapper');
 let tbodyBook;
 let userId;
@@ -11,6 +12,7 @@ let userId;
 document.addEventListener('DOMContentLoaded', showAllUsers);
 createBtn.addEventListener('click', showCreateClientForm);
 showFormPeriodBtn.addEventListener('click', showFormPeriod);
+showNotificationsBtn.addEventListener('click', showNotifications);
 
 async function showAllUsers() {
 	let users = await getAllUsers();
@@ -288,7 +290,8 @@ async function showBooksUser(e) {
 async function returnBook(e) {
 	let bookId = getId(e);
 
-	await fetch(baseBackURL + '/' + userId + '/books/' + bookId, { method: 'DELETE' });
+	let url = baseBackURL + '/' + userId + '/books/' + bookId;
+	await fetch(url, { method: 'DELETE' });
 }
 
 function showFormPeriod() {
@@ -351,6 +354,57 @@ async function getBooksForPeriod(date1, date2) {
 	} else {
 		alert("Ошибка HTTP: " + response.status);
 	}
+}
+
+async function showNotifications() {
+	wrapper.innerHTML = ' <table class="table">\n' +
+		'    <thead>\n' +
+		'    <tr>\n' +
+		'      <th scope="col">#</th>\n' +
+		'      <th scope="col">Message</th>\n' +
+		'    </tr>\n' +
+		'    </thead>\n' +
+		'    <tbody>\n' +
+		'    </tbody>\n' +
+		'  </table>\n' +
+		'\n' +
+		'  <button class="btn btn-primary btn-back"><a>Back to Main</a></button>';
+
+	let backbtn = document.querySelector('.btn-back');
+	backbtn.addEventListener('click', backToMain);
+	tbodyBook = document.querySelector('tbody');
+	let notifications = await getNotifications();
+	let i = 1;
+	for (let notification of notifications) {
+		let tr = createNotificationTr(notification);
+		tr.classList.toggle('row-' + i++);
+		tbodyBook.appendChild(tr);
+	}
+
+}
+
+async function getNotifications() {
+	let response = await fetch('http://localhost:8080/notifications');
+	if (response.ok) { // если HTTP-статус в диапазоне 200-299
+		// получаем тело ответа
+		return await response.json();
+	} else {
+		alert("Ошибка HTTP: " + response.status);
+	}
+}
+
+function createNotificationTr(notification) {
+	let tr = document.createElement('tr');
+	// id
+	let td1 = document.createElement('td');
+	// message
+	let td2 = document.createElement('td');
+	td1.textContent = notification.id;
+	td2.textContent = notification.message;
+
+	tr.appendChild(td1);
+	tr.appendChild(td2);
+	return tr;
 }
 
 function createDateBookTr(datebook) {
