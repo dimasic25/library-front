@@ -264,7 +264,7 @@ async function takeBook(e) {
 }
 
 async function getBooksUser() {
-	let url = baseBackURL + '/' + userId + '/booksUser';
+	let url = baseBackURL + '/' + userId + '/books';
 	let response = await fetch(url);
 	if (response.ok) { // если HTTP-статус в диапазоне 200-299
 		// получаем тело ответа
@@ -346,7 +346,7 @@ async function showBooksForPeriod() {
 }
 
 async function getBooksForPeriod(date1, date2) {
-	let url = 'http://localhost:8080/booksPeriod?begin=' + date1 + '&end=' + date2;
+	let url = 'http://localhost:8080/books-period?begin=' + date1 + '&end=' + date2;
 	let response = await fetch(url);
 	if (response.ok) { // если HTTP-статус в диапазоне 200-299
 		// получаем тело ответа
