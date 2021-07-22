@@ -1,4 +1,5 @@
 const baseBackURL = 'http://localhost:8080/users';
+const baseBackBookURL = 'http://localhost:8080/books';
 const baseFrontURL = 'http://127.0.0.1:5500/index.html';
 
 const tbody = document.querySelector('tbody');
@@ -207,7 +208,7 @@ async function showBooks(e) {
 }
 
 async function getAllBooks() {
-	let response = await fetch('http://localhost:8080/books');
+	let response = await fetch(baseBackBookURL);
 	if (response.ok) { // если HTTP-статус в диапазоне 200-299
 		// получаем тело ответа
 		return await response.json();
@@ -258,13 +259,13 @@ function createBookTR(book, flagActions) {
 async function takeBook(e) {
 	userId = e.currentTarget.userId;
 	let bookId = getId(e);
-	let url = baseBackURL + '/' + userId + '/books/' + bookId;
+	let url = baseBackBookURL + '/' + bookId + '/take?user_id=' + userId;
 
-	await fetch(url);
+	await fetch(url, { method: 'PUT' });
 }
 
 async function getBooksUser() {
-	let url = baseBackURL + '/' + userId + '/books';
+	let url = baseBackBookURL + '/books-user?user_id=' + userId;
 	let response = await fetch(url);
 	if (response.ok) { // если HTTP-статус в диапазоне 200-299
 		// получаем тело ответа
@@ -290,8 +291,8 @@ async function showBooksUser(e) {
 async function returnBook(e) {
 	let bookId = getId(e);
 
-	let url = baseBackURL + '/' + userId + '/books/' + bookId;
-	await fetch(url, { method: 'DELETE' });
+	let url = baseBackBookURL + '/' + bookId + '/return?user_id=' + userId;
+	await fetch(url, { method: 'PUT' });
 }
 
 function showFormPeriod() {
@@ -346,7 +347,7 @@ async function showBooksForPeriod() {
 }
 
 async function getBooksForPeriod(date1, date2) {
-	let url = 'http://localhost:8080/books-period?begin=' + date1 + '&end=' + date2;
+	let url = baseBackBookURL + '/books-period?begin=' + date1 + '&end=' + date2;
 	let response = await fetch(url);
 	if (response.ok) { // если HTTP-статус в диапазоне 200-299
 		// получаем тело ответа
