@@ -245,7 +245,9 @@ function createBookTR(book, flagActions) {
 			'</div>';
 	} else if (flagActions === 2) {
 		td5.innerHTML =
-			'<a class="btn btn-warning btn-returnBook" role="button">Return Book</a>'
+			'<div class="btn-group action-buttons" role="group" aria-label="Basic example">' +
+			'<a class="btn btn-warning btn-returnBook" role="button">Return Book</a>' +
+			'</div';
 	}
 	tr.appendChild(td1);
 	tr.appendChild(td2);
