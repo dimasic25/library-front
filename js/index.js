@@ -321,7 +321,6 @@ async function showBooksForPeriod() {
 	wrapper.innerHTML = ' <table class="table">\n' +
 		'    <thead>\n' +
 		'    <tr>\n' +
-		'      <th scope="col">#</th>\n' +
 		'      <th scope="col">Name User</th>\n' +
 		'      <th scope="col">Name Book</th>\n' +
 		'      <th scope="col">Date Taking</th>\n' +
@@ -412,27 +411,23 @@ function createNotificationTr(notification) {
 
 function createDateBookTr(datebook) {
 	let tr = document.createElement('tr');
-	// id
-	let td1 = document.createElement('td');
 	// NameUser
-	let td2 = document.createElement('td');
+	let td1 = document.createElement('td');
 	// NameBook
-	let td3 = document.createElement('td');
+	let td2 = document.createElement('td');
 	// Date taking
-	let td4 = document.createElement('td');
+	let td3 = document.createElement('td');
 	// Date return
-	let td5 = document.createElement('td');
-	td1.textContent = datebook.id;
-	td2.textContent = datebook.user.first_name + ' ' + datebook.user.last_name;
-	td3.textContent = datebook.book.name;
-	td4.textContent = datebook.date_taking;
-	td5.textContent = datebook.date_return;
+	let td4 = document.createElement('td');
+	td1.textContent = datebook.user.first_name + ' ' + datebook.user.last_name;
+	td2.textContent = datebook.book.name;
+	td3.textContent = datebook.date_taking;
+	td4.textContent = datebook.date_return;
 
 	tr.appendChild(td1);
 	tr.appendChild(td2);
 	tr.appendChild(td3);
 	tr.appendChild(td4);
-	tr.appendChild(td5);
 	return tr;
 }
 
