@@ -263,7 +263,7 @@ async function takeBook(e) {
 	let bookId = getId(e);
 	let url = baseBackBookURL + '/' + bookId + '/take?user_id=' + userId;
 
-	await fetch(url, { method: 'PUT' });
+	await fetch(url, { method: 'POST' });
 }
 
 async function getBooksUser() {
